@@ -1,0 +1,21 @@
+server:
+  port: 8090
+spring:
+  cloud:
+    gateway:
+      routes:
+        - id: consumer_route   #路由的唯一标志，通常取服务名
+          #uri: http://127.0.0.1:8080  #微服务的访问路径
+          uri: lb://nacos-consumer   #负载均衡（使用服务名）
+          predicates:
+          - Path=/cms/consumer/{segment}
+          filters:
+            - RewritePath=/cms/(?<segment>.*),/$\{segment} #过滤器
+
+        - id: provider_route
+          #uri: http://127.0.0.1:8070  #微服务的访问路径
+          uri: lb://nacos-provider   #负载均衡（使用服务名）
+          predicates: #断言
+          - Path=/pms/provider/{segment}
+          filters:
+            - RewritePath=/pms/(?<segment>.*),/$\{segment}
